@@ -176,9 +176,17 @@ mini_movie_frame = pandas.DataFrame(mini_movie_dict)
 mini_movie_frame['Total'] = mini_movie_frame['Ticket Price'] + mini_movie_frame['Surcharge']
 mini_movie_frame['Profit'] = mini_movie_frame['Total'] - 5
 
+
+# Find the winner before total and profit are calculated.
+# Raffle winner.
+winner = random.choice(all_names)
+# Find the index of the winner.
+winner_index = all_names.index(winner)
+total_won = mini_movie_frame.at[winner_index, 'Total']
+
 # Finds the total amount of gross profit and net profit from the sales.
-total_paid = mini_movie_frame['Total'].sum()
-total_profit = mini_movie_frame['Profit'].sum()
+total_paid = mini_movie_frame['Total'].sum() - total_won
+total_profit = mini_movie_frame['Profit'].sum() - mini_movie_frame.at[winner_index, 'Profit']
 
 # Currency formatting (uses currency function).
 add_dollars = ["Ticket Price", "Surcharge", "Total", "Profit"]
@@ -189,27 +197,22 @@ for var_item in add_dollars:
 # Stops pandas from printing the index and prints the table.
 print(mini_movie_frame.to_string(index=False))
 
+# For aesthetical purposes print the winner after the table has been printed but before the total and profit.
+print(f"\nWinner {winner} | Index position {winner_index + 1}")
+# Announce the winner.
+print(f"The lucky winner is {winner}! Their ticket worth {total_won} is free!\n")
+
 # Outputs the total paid and total profit rounded to 2dp.
-print()
 print(f"Total Paid: ${total_paid:.2f}")
 print(f"Total Profit: ${total_profit:.2f}")
 
-
-# Raffle winner.
-winner = random.choice(all_names)
-
-# Find the index of the winner.
-winner_index = all_names.index(winner)
-print(f"Winner {winner} | Index position {winner_index + 1}")
-
-# Find the winners ticket price.
+# Find the winners ticket price.w
 winner_ticket_price = all_ticket_costs[winner_index]
 winner_surcharge = all_ticket_costs[winner_index]
 
-total_won = mini_movie_frame.at[winner_index, "Total"]
 
-# Announce the winner.
-print(f"The lucky winner is {winner}! Their ticket worth {total_won} is free!")
+
+
 
 
 
