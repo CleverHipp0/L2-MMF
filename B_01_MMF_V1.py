@@ -1,4 +1,7 @@
 # Functions go here.
+import pandas
+import random
+
 def statement_generator(statement, decoration):
     """Makes a simple statement look nice by adding a decoration to the beginning and end."""
     print(f"{decoration * 3} {statement} {decoration * 3}")
@@ -50,6 +53,9 @@ def int_checker(question):
         except ValueError:
             print(error)
 
+def currency(value):
+    return "${:.2f}".format(value)
+
 
 # Main routine goes here.
 # Asks the user if they want instructions.
@@ -58,7 +64,7 @@ print(f"You choose {instructions}.\n")
 
 if instructions == "yes":
     # Instructions.
-    statement_generator("instructions", "ℹ️")
+    statement_generator("Instructions", "ℹ️")
     print('''
 How to fall down stairs:
     Step 1:
@@ -87,12 +93,6 @@ total_cost = 0
 all_names = []
 all_ticket_costs = []
 all_surcharges = []
-
-
-
-
-
-
 
 while tickets_sold < MAX_TICKETS:
     # Ask for name.
@@ -134,8 +134,8 @@ while tickets_sold < MAX_TICKETS:
 
     # Adds the credit surcharge if necessary.
     if payment_type == "credit":
-        price *= (1 - CREDIT_SURCHARGE)
         surcharge = price * CREDIT_SURCHARGE
+        cost_inc_surcharge = price + surcharge
 
     else:
         surcharge = 0
@@ -143,34 +143,73 @@ while tickets_sold < MAX_TICKETS:
     # adds the price to the total cost of the purchase.
     total_cost += price
 
-    # Adds details to required lists
+    # Adds details to required lists.
     all_names.append(name)
     all_surcharges.append(surcharge)
     all_ticket_costs.append(price)
 
     print(f"{name}'s ticket cost (inc surcharge) :{price:.2f} they paid by {payment_type}."
-          f"The surcharge is ${surcharge:.2f}")
+          f"The surcharge is ${surcharge:.2f}\n")
 
 
-
-
-print(total_cost)
-
+# Tells the user how many tickets they sold.
 if tickets_sold == MAX_TICKETS:
-    print(f"You have sold all of the tickets (ie: {MAX_TICKETS} tickets).")
+    print(f"\nYou have sold all of the tickets (ie: {MAX_TICKETS} tickets).\n")
 
 elif tickets_sold < MAX_TICKETS:
-    print(f"You sold {tickets_sold}/{MAX_TICKETS}.")
+    print(f"\nYou sold {tickets_sold}/{MAX_TICKETS} tickets.\n")
 
 else:
-    print(f"Sorry but you tried to sell {tickets_sold} but there are only {MAX_TICKETS} left.")
+    print(f"Sorry but you tried to sell {tickets_sold} but there are only {MAX_TICKETS} left.\n")
+
+# Formats the details into a dictionary to be later converted to pandas.
+mini_movie_dict = {
+    "Name": all_names,
+    "Ticket Price": all_ticket_costs,
+    "Surcharge": all_surcharges,
+}
+
+# Creates a table similar to a dictionary.
+mini_movie_frame = pandas.DataFrame(mini_movie_dict)
+
+# Calculate the total cost per person.
+mini_movie_frame['Total'] = mini_movie_frame['Ticket Price'] + mini_movie_frame['Surcharge']
+mini_movie_frame['Profit'] = mini_movie_frame['Total'] - 5
+
+# Finds the total amount of gross profit and net profit from the sales.
+total_paid = mini_movie_frame['Total'].sum()
+total_profit = mini_movie_frame['Profit'].sum()
+
+# Currency formatting (uses currency function).
+add_dollars = ["Ticket Price", "Surcharge", "Total", "Profit"]
+for var_item in add_dollars:
+    mini_movie_frame[var_item] = mini_movie_frame[var_item].apply(currency)
 
 
+# Stops pandas from printing the index and prints the table.
+print(mini_movie_frame.to_string(index=False))
+
+# Outputs the total paid and total profit rounded to 2dp.
+print()
+print(f"Total Paid: ${total_paid:.2f}")
+print(f"Total Profit: ${total_profit:.2f}")
 
 
+# Raffle winner.
+winner = random.choice(all_names)
 
+# Find the index of the winner.
+winner_index = all_names.index(winner)
+print(f"Winner {winner} | Index position {winner_index + 1}")
 
+# Find the winners ticket price.
+winner_ticket_price = all_ticket_costs[winner_index]
+winner_surcharge = all_ticket_costs[winner_index]
 
+total_won = mini_movie_frame.at[winner_index, "Total"]
+
+# Announce the winner.
+print(f"The lucky winner is {winner}! Their ticket worth {total_won} is free!")
 
 
 
