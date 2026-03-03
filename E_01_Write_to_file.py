@@ -22,3 +22,4 @@ for item in to_write:
     print(item)
     text_file.write(item)
     text_file.write("\n")
+
