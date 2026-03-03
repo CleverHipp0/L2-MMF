@@ -2,9 +2,14 @@
 import pandas
 import random
 
+from MMF.C_01_Statement_Generator import statement_generator
+from Project_Zero.R_01_Statement_Generator import statement_generator
+from Project_Zero.R_01_Statement_Generator_V2 import statement_generator
+
+
 def statement_generator(statement, decoration):
     """Makes a simple statement look nice by adding a decoration to the beginning and end."""
-    print(f"{decoration * 3} {statement} {decoration * 3}")
+    return f"\n{decoration * 3} {statement} {decoration * 3}"
 
 def string_checker(question, valid_answers=("yes", "no"), first_letter_count=1):
     """Asks a yes or no question and requires a yes or no response."""
@@ -58,15 +63,17 @@ def currency(value):
 
 
 # Main routine goes here.
+
+heading = statement_generator("Mini Movie Fundraiser", "=")
+
 # Asks the user if they want instructions.
 instructions = string_checker("Would you like to read the instructions? ")
 print(f"You choose {instructions}.\n")
 
 if instructions == "yes":
     # Instructions.
-    statement_generator("Instructions", "ℹ️")
-    print('''
-How to fall down stairs:
+    print(statement_generator("Instructions", "ℹ️"))
+    print('''How to fall down stairs:
     Step 1:
     Step 2:
     Step 4:
@@ -74,22 +81,22 @@ How to fall down stairs:
     Step 16:
     ''')
 
-# Costs set up
+# Costs set up.
 CHILD_PRICE = 7.50
 ADULT_PRICE = 10.50
 SENIOR_PRICE = 6.50
 
-# Surcharge set up
+# Surcharge set up.
 CREDIT_SURCHARGE = 0.05
 
-# Max tickets
+# Max tickets.
 MAX_TICKETS = 5
 
-
+# The start of counters, these will increase later on.
 tickets_sold = 0
 total_cost = 0
 
-# Set up lists for user details
+# Set up lists for user details.
 all_names = []
 all_ticket_costs = []
 all_surcharges = []
@@ -101,7 +108,6 @@ while tickets_sold < MAX_TICKETS:
     # Exit code break
     if name == "xxx":
         break
-
 
     # Asks for age.
     age = int_checker("Age: ")
@@ -148,19 +154,11 @@ while tickets_sold < MAX_TICKETS:
     all_surcharges.append(surcharge)
     all_ticket_costs.append(price)
 
-    print(f"{name}'s ticket cost (inc surcharge) :{price:.2f} they paid by {payment_type}."
+    print(f"{name}'s ticket cost (inc surcharge): {price:.2f} | They paid by {payment_type}."
           f"The surcharge is ${surcharge:.2f}\n")
 
-
-# Tells the user how many tickets they sold.
-if tickets_sold == MAX_TICKETS:
-    print(f"\nYou have sold all of the tickets (ie: {MAX_TICKETS} tickets).\n")
-
-elif tickets_sold < MAX_TICKETS:
-    print(f"\nYou sold {tickets_sold}/{MAX_TICKETS} tickets.\n")
-
-else:
-    print(f"Sorry but you tried to sell {tickets_sold} but there are only {MAX_TICKETS} left.\n")
+# Ticket section heading
+ticket_heading = statement_generator("Ticket Details", "-")
 
 # Formats the details into a dictionary to be later converted to pandas.
 mini_movie_dict = {
@@ -195,22 +193,54 @@ for var_item in add_dollars:
 
 
 # Stops pandas from printing the index and prints the table.
-print(mini_movie_frame.to_string(index=False))
+mini_movie_string = mini_movie_frame.to_string(index=False)
 
-# For aesthetical purposes print the winner after the table has been printed but before the total and profit.
-print(f"\nWinner {winner} | Index position {winner_index + 1}")
-# Announce the winner.
-print(f"The lucky winner is {winner}! Their ticket worth {total_won} is free!\n")
+raffle_winner_heading = statement_generator("Raffle Details", "-")
+
+
 
 # Outputs the total paid and total profit rounded to 2dp.
-print(f"Total Paid: ${total_paid:.2f}")
-print(f"Total Profit: ${total_profit:.2f}")
+total_paid_string = f"Total Paid: ${total_paid:.2f}"
+total_profit_string = f"Total Profit: ${total_profit:.2f}"
 
-# Find the winners ticket price.w
+# Find the winners ticket price.
 winner_ticket_price = all_ticket_costs[winner_index]
 winner_surcharge = all_ticket_costs[winner_index]
 
+# Announce the winner of the raffle.
+winner_string = f"The lucky winner is {winner}! Their ticket worth {total_won} is free!"
 
+# Adjusted profit setting.
+adjusted_profit_heading = statement_generator("Adjusted Profit", "-")
+adjusted_profit_string = f"We have given away {winner}'s ticket which was worth {total_won:.2f} for free so our total profit decreases by {total_won - 5:.2f}\n"
+
+
+# Tells the user how many tickets they sold.
+if tickets_sold == MAX_TICKETS:
+    amount_of_tickets = statement_generator(f"You have sold all the tickets (ie: {MAX_TICKETS} tickets).", "-")
+
+elif tickets_sold < MAX_TICKETS:
+    amount_of_tickets = statement_generator(f"You sold {tickets_sold}/{MAX_TICKETS} tickets.", "-")
+
+else:
+    amount_of_tickets = statement_generator(f"Sorry but you tried to sell {tickets_sold} but there are only {MAX_TICKETS} left.", "-")
+
+# Write to file:
+# Set up the file to write to and format it correctly.
+file_name = "mmf_data"
+write_to = "{}.txt".format(file_name)
+
+# Open the text file.
+text_file = open(write_to, "w+")
+
+# List of things that need to be written.
+to_write = [heading, ticket_heading, mini_movie_string, total_paid_string, total_profit_string, raffle_winner_heading,
+            winner_string, adjusted_profit_heading, adjusted_profit_string, amount_of_tickets]
+
+# Write the list of things to write and print them.
+for item in to_write:
+    print(item)
+    text_file.write(item)
 
 
 
