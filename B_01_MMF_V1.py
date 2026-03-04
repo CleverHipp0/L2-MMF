@@ -2,11 +2,6 @@
 import pandas
 import random
 
-from MMF.C_01_Statement_Generator import statement_generator
-from Project_Zero.R_01_Statement_Generator import statement_generator
-from Project_Zero.R_01_Statement_Generator_V2 import statement_generator
-
-
 def statement_generator(statement, decoration):
     """Makes a simple statement look nice by adding a decoration to the beginning and end."""
     return f"\n{decoration * 3} {statement} {decoration * 3}"
@@ -18,10 +13,10 @@ def string_checker(question, valid_answers=("yes", "no"), first_letter_count=1):
     while True:
         result = input(question).lower().strip(r"\ ")
 
-        for item in valid_answers:
+        for i in valid_answers:
             # If the result is in tolerable answers then return the first letter of the response.
-            if result == item or result[:first_letter_count] == item[:first_letter_count]:
-                return item
+            if result == i or result[:first_letter_count] == i[:first_letter_count]:
+                return i
 
 
         # Error message for iff a mistake is made.
@@ -64,6 +59,7 @@ def currency(value):
 
 # Main routine goes here.
 
+print(statement_generator("Mini Movie Fundraiser", "🍿"))
 heading = statement_generator("Mini Movie Fundraiser", "=")
 
 # Asks the user if they want instructions.
@@ -73,12 +69,13 @@ print(f"You choose {instructions}.\n")
 if instructions == "yes":
     # Instructions.
     print(statement_generator("Instructions", "ℹ️"))
-    print('''How to fall down stairs:
-    Step 1:
-    Step 2:
-    Step 4:
-    Step 8:
-    Step 16:
+    print('''How use the Mini Movie Fundraiser calculator:
+    Step 1: Enter the customers name and press the <enter> key.
+    Step 2: Enter the customers age and press the <enter> key.
+    Step 3: Enter the way the customer pays for their ticket (cash or credit) and press the <enter> key.
+    Step 4: Repeat steps 1 - 3 until you are finished and then put in the code "xxx" 
+    in the name field and press the <enter> key.
+    Step 5: Look over your statistics and check the text file withe the results.
     ''')
 
 # Costs set up.
@@ -208,22 +205,22 @@ winner_ticket_price = all_ticket_costs[winner_index]
 winner_surcharge = all_ticket_costs[winner_index]
 
 # Announce the winner of the raffle.
-winner_string = f"The lucky winner is {winner}! Their ticket worth {total_won} is free!"
+winner_string = f"The lucky winner is {winner}! Their ticket worth ${total_won} is free!"
 
 # Adjusted profit setting.
 adjusted_profit_heading = statement_generator("Adjusted Profit", "-")
-adjusted_profit_string = f"We have given away {winner}'s ticket which was worth {total_won:.2f} for free so our total profit decreases by {total_won - 5:.2f}\n"
+adjusted_profit_string = f"We have given away {winner}'s ticket which was worth ${total_won:.2f} for free so our total profit decreases by ${total_won - 5:.2f}."
 
 
 # Tells the user how many tickets they sold.
 if tickets_sold == MAX_TICKETS:
-    amount_of_tickets = statement_generator(f"You have sold all the tickets (ie: {MAX_TICKETS} tickets).", "-")
+    amount_of_tickets = statement_generator(f"You have sold all the tickets (ie: {MAX_TICKETS} tickets)", "-")
 
 elif tickets_sold < MAX_TICKETS:
-    amount_of_tickets = statement_generator(f"You sold {tickets_sold}/{MAX_TICKETS} tickets.", "-")
+    amount_of_tickets = statement_generator(f"You sold {tickets_sold}/{MAX_TICKETS} tickets", "-")
 
 else:
-    amount_of_tickets = statement_generator(f"Sorry but you tried to sell {tickets_sold} but there are only {MAX_TICKETS} left.", "-")
+    amount_of_tickets = statement_generator(f"Sorry but you tried to sell {tickets_sold} but there are only {MAX_TICKETS} left", "-")
 
 # Write to file:
 # Set up the file to write to and format it correctly.
@@ -241,7 +238,7 @@ to_write = [heading, ticket_heading, mini_movie_string, total_paid_string, total
 for item in to_write:
     print(item)
     text_file.write(item)
-
+    text_file.write("\n")
 
 
 
